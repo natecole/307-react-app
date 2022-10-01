@@ -2,6 +2,7 @@ const e = require('express');
 const express = require('express');
 const app = express();
 const port = 8675;
+const cors = require('cors');
 
 const users = { 
     users_list :
@@ -34,6 +35,7 @@ const users = {
     ]
  }
 
+app.use(cors());
 app.use(express.json());
 
 app.get('/', (req, res) => {
@@ -68,8 +70,7 @@ app.get('/users/:id', (req, res) => {
 
 app.post('/users', (req, res) => {
    const userToAdd = req.body;
-   addUser(userToAdd);
-   res.status(200).end();
+   res.status(201).send(addUser(userToAdd));
 });
 
 app.delete('/users/:id', (req, res) => {
@@ -96,7 +97,22 @@ function findUserById(id) {
 }
 
 function addUser(user){
+   user.id = makeId();
    users['users_list'].push(user);
+   return user;
+}
+
+function makeId() {
+   var result = '';
+   const letters = 'abcdefghijklmnopqrstuvwxyz';
+   const nums = '0123456789'
+   for (var i = 0; i < 3; i++ ) {
+     result += letters.charAt(Math.floor(Math.random() * letters.length));
+   }
+   for (var i = 0; i < 3; i++ ) {
+      result += nums.charAt(Math.floor(Math.random() * nums.length));
+   }
+   return result;
 }
 
 function deleteUser(id){
